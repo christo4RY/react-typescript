@@ -1,47 +1,19 @@
-import { KeyboardEvent, ReactNode, useReducer, useState } from "react"
+import { ReactNode } from "react"
+import { useCounter, useText } from "../hooks/Counter"
 
-const initalState = {
-  count:0,
-  text:null
+type Counterprops = {
+  chil:(count:number) => ReactNode
 }
-const enum REDUCER_ACION_TYPE {
-      INCREASE,
-      DECREASE,
-      TEXT_INPUT
-}
-type Chilprops = {
-  chil:(count:number)=>ReactNode
-}
-
-type reducerAction = {
-  type:REDUCER_ACION_TYPE,
-  payload?:string
-}
-
-const reducer = (state:typeof initalState,action:reducerAction) : typeof initalState => {
-  switch (action.type) {
-    case REDUCER_ACION_TYPE.INCREASE:
-      return {...state,count:state.count + 1}
-    case REDUCER_ACION_TYPE.DECREASE:
-      return {...state,count:state.count - 1}
-    case REDUCER_ACION_TYPE.TEXT_INPUT:
-      return {...state,text:action.payload??''}
-    default:
-      throw new Error()
-  }
-}
-
-const Counter = ({chil}:Chilprops) => {
-  const [state,dispatch] = useReducer(reducer,initalState)
+const Counter = ({chil}:Counterprops) => {
+  const {count,increase,decrease} = useCounter()
+  const {text,textinput} = useText()
   return (
     <div>
-      {chil(state.count)}
-      <div>
-        <button onClick={()=>dispatch({type:REDUCER_ACION_TYPE.INCREASE})}>Increase</button>
-        <button onClick={()=>dispatch({type:REDUCER_ACION_TYPE.DECREASE})}>Decrease</button>
-        <input type="text" onChange={(e: KeyboardEvent<HTMLInputElement>)=>dispatch({type:REDUCER_ACION_TYPE.TEXT_INPUT,payload:e.target.value})}/>
-        <h1>{state.text}</h1>
-      </div>
+      {chil(count)}
+      <button onClick={increase}>Increase</button>
+      <button onClick={decrease}>Decrease</button>
+      <input type="text" onChange={textinput} />
+      <h1>{text}</h1>
     </div>
   )
 }

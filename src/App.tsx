@@ -1,11 +1,11 @@
 import Counter from "./components/Counter"
-
+import { CountContextProvider } from "./contexts/countContext"
 
 const App = () => {
   return (
-    <div> 
-    <Counter chil={(count)=><h1>Count is {count}</h1>}/>
-    </div>
+      <CountContextProvider>
+        <Counter chil={(count)=><h1>Count is {count}</h1>}/>
+      </CountContextProvider>
   )
 }
 
