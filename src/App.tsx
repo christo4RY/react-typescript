@@ -4,7 +4,7 @@ import Counter from "./components/Counter"
 const App = () => {
   return (
     <div> 
-    <Counter/>
+    <Counter chil={(count)=><h1>Count is {count}</h1>}/>
     </div>
   )
 }

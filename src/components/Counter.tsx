@@ -1,59 +1,49 @@
-import {
-  KeyboardEvent,
-  MouseEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import Button from "./Button";
+import { KeyboardEvent, ReactNode, useReducer, useState } from "react"
 
-interface User {
-  id?: number;
-  name?: string;
+const initalState = {
+  count:0,
+  text:null
+}
+const enum REDUCER_ACION_TYPE {
+      INCREASE,
+      DECREASE,
+      TEXT_INPUT
+}
+type Chilprops = {
+  chil:(count:number)=>ReactNode
 }
 
-type fibFunc = (n: number) => number 
-
-const fib: fibFunc = (n) => {
-  if (n < 2) return n 
-  return fib(n - 1) + fib(n - 2) 
+type reducerAction = {
+  type:REDUCER_ACION_TYPE,
+  payload?:string
 }
 
-const myNum: number = 37 
-const Counter = () => {
-  const [count, setCount] = useState<number>(0);
-  const [users, setUsers] = useState<User[] | null>(null);
-    const inputRef = useRef<HTMLInputElement>(null)
-    console.log(inputRef?.current)
-    console.log(inputRef?.current?.value)
-  useEffect(() => {
-    console.log("mounted");
-    console.log(`users ${users}`);
-    console.log(inputRef?.current)
-    return () => console.log("unmounted");
-  }, []);
+const reducer = (state:typeof initalState,action:reducerAction) : typeof initalState => {
+  switch (action.type) {
+    case REDUCER_ACION_TYPE.INCREASE:
+      return {...state,count:state.count + 1}
+    case REDUCER_ACION_TYPE.DECREASE:
+      return {...state,count:state.count - 1}
+    case REDUCER_ACION_TYPE.TEXT_INPUT:
+      return {...state,text:action.payload??''}
+    default:
+      throw new Error()
+  }
+}
 
-  const add = useCallback(
-    (
-      e: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>
-    ): void => {
-      setCount((pre) => pre + 1);
-    },
-    [count]
-  );
-
-  const result = useMemo<number>(()=>fib(myNum),[myNum])
+const Counter = ({chil}:Chilprops) => {
+  const [state,dispatch] = useReducer(reducer,initalState)
   return (
     <div>
-      <h1>{count}</h1>
-      <Button add={add} />
-      <h1>{result}</h1>
-      <input type="text" ref={inputRef} />
-      <h1></h1>
+      {chil(state.count)}
+      <div>
+        <button onClick={()=>dispatch({type:REDUCER_ACION_TYPE.INCREASE})}>Increase</button>
+        <button onClick={()=>dispatch({type:REDUCER_ACION_TYPE.DECREASE})}>Decrease</button>
+        <input type="text" onChange={(e: KeyboardEvent<HTMLInputElement>)=>dispatch({type:REDUCER_ACION_TYPE.TEXT_INPUT,payload:e.target.value})}/>
+        <h1>{state.text}</h1>
+      </div>
     </div>
-  );
-};
+  )
+}
 
-export default Counter;
+export default Counter
